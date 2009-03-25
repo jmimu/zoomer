@@ -22,6 +22,7 @@
 #include "MainWindow.h"
 
 #include <QtGui/QFrame>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
 {
@@ -37,36 +38,43 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
   statusBar->showMessage("Bonjour !");
   
 	reload_img = new QPushButton;
+	reload_img->setToolTip("Reinitialize colors");
 	reload_img->setIcon(QIcon("reload_img.png"));
 	mainToolBar->addWidget(reload_img);
 	QObject::connect(reload_img, SIGNAL(clicked()), this, SLOT(reloadImg()));
 
 	contrast_more = new QPushButton;
+	contrast_more->setToolTip("More contrast");
 	contrast_more->setIcon(QIcon("contrast_more.png"));
 	mainToolBar->addWidget(contrast_more);
 	QObject::connect(contrast_more, SIGNAL(clicked()), this, SLOT(contrastMore()));
 
 	contrast_less = new QPushButton;
+	contrast_less->setToolTip("Less contrast");
 	contrast_less->setIcon(QIcon("contrast_less.png"));
 	mainToolBar->addWidget(contrast_less);
 	QObject::connect(contrast_less, SIGNAL(clicked()), this, SLOT(contrastLess()));
 
 	brightness_more = new QPushButton;
+	brightness_more->setToolTip("Brighter");
 	brightness_more->setIcon(QIcon("brightness_more.png"));
 	mainToolBar->addWidget(brightness_more);
 	QObject::connect(brightness_more, SIGNAL(clicked()), this, SLOT(brightnessMore()));
 
 	brightness_less = new QPushButton;
+	brightness_less->setToolTip("Less bright");
 	brightness_less->setIcon(QIcon("brightness_less.png"));
 	mainToolBar->addWidget(brightness_less);
 	QObject::connect(brightness_less, SIGNAL(clicked()), this, SLOT(brightnessLess()));
 
 	gamma_more = new QPushButton;
+	gamma_more->setToolTip("More gamma");
 	gamma_more->setIcon(QIcon("gamma_more.png"));
 	mainToolBar->addWidget(gamma_more);
 	QObject::connect(gamma_more, SIGNAL(clicked()), this, SLOT(gammaMore()));
 
 	gamma_less = new QPushButton;
+	gamma_less->setToolTip("Less gamma");
 	gamma_less->setIcon(QIcon("gamma_less.png"));
 	mainToolBar->addWidget(gamma_less);
 	QObject::connect(gamma_less, SIGNAL(clicked()), this, SLOT(gammaLess()));
@@ -77,11 +85,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
 	mainToolBar->addWidget(line1);
 	
 	previous = new QPushButton;
+	previous->setToolTip("Previous picture");
 	previous->setIcon(QIcon("previous.png"));
 	mainToolBar->addWidget(previous);
 	QObject::connect(previous, SIGNAL(clicked()), this, SLOT(previous_()));
 	
 	next = new QPushButton;
+	next->setToolTip("Next picture");
 	next->setIcon(QIcon("next.png"));
 	mainToolBar->addWidget(next);
 	QObject::connect(next, SIGNAL(clicked()), this, SLOT(next_()));
@@ -92,6 +102,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
 	mainToolBar->addWidget(line2);
 	
 	validation = new QPushButton;
+	validation->setToolTip("Validation");
 	validation->setIcon(QIcon("validation.png"));
 	mainToolBar->addWidget(validation);
 	QObject::connect(validation, SIGNAL(clicked()), this, SLOT(validation_()));
@@ -104,6 +115,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
 
 
 	exit = new QPushButton;
+	exit->setToolTip("Exit without saving");
 	exit->setIcon(QIcon("exit.png"));
 	mainToolBar->addWidget(exit);
 	QObject::connect(exit, SIGNAL(clicked()), qApp, SLOT(quit()));
@@ -111,6 +123,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
 	sa = new QScrollArea( this );
 	sa->setWidgetResizable( true );
 
+	resize(640-1,480);
 }
 
 MainWindow::~MainWindow()
@@ -118,11 +131,30 @@ MainWindow::~MainWindow()
 	
 }
 
-bool MainWindow::load_config(std::string cfgfile)
+bool MainWindow::load_config(QString cfgfile)
 {
-	cfg.read(cfgfile);
+	int result_read=cfg.read(cfgfile.toStdString());
+	if (result_read==-1)
+	{
+		QMessageBox::information(this, "Error!", "Configuration file not found, an example has been created: "+cfgfile);
+	}else	if (result_read==1)
+	{
+		QMessageBox::information(this, "Error!", "Error in the configuration file. See stderr for details and check your configuration file: "+cfgfile);
+		qApp->quit();
+		return false;
+	}
+
 	statusBar->showMessage(cfg.message.c_str());
 	pw = new PixmapWidget( QString(cfg.filenames[cfg.num_file-1].c_str()), sa );
+	
+	if (pw->zoomFactor<0) //means that the picture does not exist
+	{
+		cfg.num_file=0;
+		if (!next_()) QMessageBox::information(this, "Error!", "No file found, please check your configuration file: "+cfgfile);
+		qApp->quit();
+		return false;
+	}
+	
 	setWindowTitle(cfg.filenames[cfg.num_file-1].c_str());
 	
 	sa->setWidget( pw );
@@ -196,34 +228,47 @@ void MainWindow::validation_()
 	cfg.contrast=pw->contrast;
 	cfg.brightness=pw->brightness;
 	cfg.gamma=pw->gamma;
-	cfg.write("zoomer.cfg");
+	cfg.write("zoomer.xml");
 	qApp->quit();
 }
-void MainWindow::previous_()
+bool MainWindow::previous_()
 {
 	if (cfg.num_file>1)
 	{
 		cfg.num_file--;
 		
 		pw->filename=cfg.filenames[cfg.num_file-1].c_str();
-		pw->load_img(pw->filename);
+		if (!pw->load_img(pw->filename)) //file not found
+		{
+			if (!previous_()) {cfg.num_file++;return false;}
+		}
+		
 		setWindowTitle(cfg.filenames[cfg.num_file-1].c_str());
 		
 		previous->setDisabled(cfg.num_file==1);
 		next->setDisabled(cfg.num_file==cfg.filenames.size());
+		return true;
 	}
+	previous->setDisabled(true);
+	return false;
 }
-void MainWindow::next_()
+bool MainWindow::next_()
 {
 	if (cfg.num_file<cfg.filenames.size())
 	{
 		cfg.num_file++;
 		
 		pw->filename=cfg.filenames[cfg.num_file-1].c_str();
-		pw->load_img(pw->filename);
+		if (!pw->load_img(pw->filename)) //file not found
+		{
+			if (!next_())  {cfg.num_file--;return false;}
+		}
 		setWindowTitle(cfg.filenames[cfg.num_file-1].c_str());
 		
 		previous->setDisabled(cfg.num_file==1);
 		next->setDisabled(cfg.num_file==cfg.filenames.size());
+		return true;
 	}
+	next->setDisabled(true);
+	return false;
 }

@@ -12,7 +12,7 @@ running:
 zoomer reads the configuration file "zoomer.cfg", and writes the changes to it.
 The configuration file is like this:
 
-##########################
+###########################
 Click on front wheel			#message
 620.999										#selection x
 369.833										#selection y
@@ -22,7 +22,12 @@ Click on front wheel			#message
 100												#gamma (%)
 2													#number of the image (first = 1)
 img/image_4_00035_07.tif	#list of image names
-img/image_4_00035_08.tif
-img/image_4_00035_09.tif
-img/image_4_00035_10.tif
-##########################
+img/image_4_00035_08.tif	#
+img/image_4_00035_09.tif	#
+img/image_4_00035_10.tif	#
+###########################
+
+
+
+Thanks to http://qt4.digitalfanatics.org
+

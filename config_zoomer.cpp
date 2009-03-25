@@ -21,6 +21,8 @@
 
 #include "config_zoomer.h"
 
+#include <stdexcept>
+
 using namespace std;
 
 ConfigZoomer::ConfigZoomer()
@@ -30,75 +32,243 @@ ConfigZoomer::ConfigZoomer()
 }
 
 
-bool ConfigZoomer::read(string cfgfile)
+int ConfigZoomer::read(string cfgfile)//return: 0:ok, -1:no file, 1:problem in the file
 {
-	filenames.clear();
-	
-	ifstream conf_file(cfgfile.c_str());
-	string line;
-	
-	getline(conf_file,message);
-	
-	getline(conf_file,line);
-	istringstream iss1( line );
-	iss1>>point_x;
-	
-	getline(conf_file,line);
-	istringstream iss2( line );
-	iss2>>point_y;
-	
-	getline(conf_file,line);
-	istringstream iss3( line );
-	iss3>>zoom_factor;
-	
-	getline(conf_file,line);
-	istringstream iss4( line );
-	iss4>>contrast;
-	
-	getline(conf_file,line);
-	istringstream iss5( line );
-	iss5>>brightness;
-	
-	getline(conf_file,line);
-	istringstream iss6( line );
-	iss6>>gamma;
-	
-	
-	getline(conf_file,line);
-	istringstream iss7( line );
-	iss7>>num_file;
-	
-	while (getline(conf_file,line))
+	//first: check existence of the file
+	ifstream conf_file(cfgfile.c_str(), ios::in);
+	if(!conf_file)
 	{
-		if (line!="")
-		{
-			filenames.push_back(line);
+		std::cerr<<cfgfile<<" file not found!\nCreate an example file...\n";
+		init_example();
+		write(cfgfile);
+		return -1;
+	}else{conf_file.close();}
+
+	//read XML content
+	TiXmlDocument doc(cfgfile.c_str());
+	if ( doc.LoadFile() )
+	{
+		std::cout << "Reading file " << cfgfile << std::endl;
+		
+		TiXmlHandle hDoc( &doc );
+		TiXmlElement* root;
+		try{
+			// check that we have "zoomer_cfg" root node...
+			// ... and that version is "1.0"
+			{
+				root = doc.FirstChildElement( "zoomer_cfg" );
+				
+				if ( !root )
+					throw std::string( "Unable to find zoomer_cfg root node !" );
+				std::string rootNode( root->Value() );
+				if ( rootNode != "zoomer_cfg" )
+					throw std::string( "Root node MUST be 'zoomer_cfg' !" );
+				
+				TiXmlElement* version = root->FirstChildElement("version");
+				if ( !version )
+					throw std::string( "Unable to find 'version' node !" );
+				std::string versionNode( version->GetText() );
+				if ( versionNode != "1.0" )
+				{
+					std::ostringstream oss;
+					oss << "'version' MUST be '1.0' ! Value is '" << versionNode << "'." << std::endl;
+					throw std::string( oss.str() );
+				}
+				std::cout << "File " << cfgfile << " is valid ..." << std::endl;
+			}
+
+			{
+				TiXmlElement* el_message = root->FirstChildElement("message");
+				if (!el_message) { std::ostringstream oss;oss << "Unable to find 'message' node !" << std::endl;throw std::string(oss.str());}
+				message=el_message->GetText();
+				TiXmlElement* el_zoom = root->FirstChildElement("zoom");
+				if (!el_zoom) { std::ostringstream oss;oss << "Unable to find 'zoom' node !" << std::endl;throw std::string(oss.str());}
+				zoom_factor=atof(el_zoom->GetText());
+				TiXmlElement* el_image_number = root->FirstChildElement("image_number");
+				if (!el_image_number) { std::ostringstream oss;oss << "Unable to find 'image_number' node !" << std::endl;throw std::string(oss.str());}
+				num_file=atoi(el_image_number->GetText());
+				
+				
+				TiXmlElement* el_selection = root->FirstChildElement("selection");
+				if ( !el_selection )
+				{
+					std::ostringstream oss;
+					oss << "Unable to find 'selection' node !" << std::endl;
+					throw std::string( oss.str() );
+				}
+				{
+					TiXmlElement* el_selection_x = el_selection->FirstChildElement("x");
+					if ( !el_selection_x )
+						throw std::string( "Unable to find 'x' node !" );
+					cout<<"X : *"<<el_selection_x->GetText()<<"* *"<<atof(el_selection_x->GetText())<<"*\n";
+					string s=el_selection_x->GetText();
+					cout<<"X : *"<<s<<"* *"<<atof(s.c_str())<<"*\n";
+					std::istringstream iss(s);
+					iss>>point_x;
+					cout<<"X : *"<<s<<"* *"<<point_x<<"*\n";
+					point_x=atof(el_selection_x->GetText());
+					
+					TiXmlElement* el_selection_y = el_selection->FirstChildElement("y");
+					if ( !el_selection_y )
+						throw std::string( "Unable to find 'y' node !" );
+					point_y=atof(el_selection_y->GetText());
+				}
+				
+				
+				TiXmlElement* el_colors = root->FirstChildElement("colors");
+				if ( !el_colors )
+				{
+					std::ostringstream oss;
+					oss << "Unable to find 'colors' node !" << std::endl;
+					throw std::string( oss.str() );
+				}
+				{
+					TiXmlElement* el_colors_contrast = el_colors->FirstChildElement("contrast");
+					if ( !el_colors_contrast )
+						throw std::string( "Unable to find 'contrast' node !" );
+					contrast=atoi(el_colors_contrast->GetText());
+					
+					TiXmlElement* el_colors_brightness = el_colors->FirstChildElement("brightness");
+					if ( !el_colors_brightness )
+						throw std::string( "Unable to find 'brightness' node !" );
+					brightness=atoi(el_colors_brightness->GetText());
+					
+					TiXmlElement* el_colors_gamma = el_colors->FirstChildElement("gamma");
+					if ( !el_colors_gamma )
+						throw std::string( "Unable to find 'gamma' node !" );
+					gamma=atoi(el_colors_gamma->GetText());
+				}
+				
+				
+				TiXmlElement* el_image_list = root->FirstChildElement("image_list");
+				if ( !el_image_list )
+				{
+					std::ostringstream oss;
+					oss << "Unable to find 'image_list' node !" << std::endl;
+					throw std::string( oss.str() );
+				}
+				{
+					TiXmlElement* el_image_list_img = el_image_list->FirstChildElement("img");
+					if ( !el_image_list_img )
+						throw std::string( "Unable to find 'img' node !" );
+					//filenames.push_back(el_image_list_img->GetText());
+					filenames.clear();
+					while (el_image_list_img)
+					{
+						filenames.push_back(el_image_list_img->GetText());
+						el_image_list_img = el_image_list_img->NextSiblingElement("img");
+					}
+					
+					
+				}
+				
+			}
 		}
+		catch(const string& s)
+		{
+			cerr<<s<<"\n";
+			return 1;
+		}
+	}else{
+		std::cerr<<"Configuration file is not XML valid!\n";
+		return 1;
 	}
 	
+	return 0;
+}
+
+//write the XML config file
+bool ConfigZoomer::write(string cfgfile)
+{
+	cout<<"Write configuration to "<<cfgfile<<"\n";
+	TiXmlDocument doc;
+	
+	TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "", "" );
+	TiXmlElement * root = new TiXmlElement( "zoomer_cfg" );
+	
+	TiXmlElement * el_version = new TiXmlElement( "version" );
+	root->LinkEndChild( el_version );
+	TiXmlText * text_version = new TiXmlText( "1.0" );
+	el_version->LinkEndChild( text_version );
+	
+	TiXmlElement * el_message = new TiXmlElement( "message" );
+	root->LinkEndChild( el_message );
+	TiXmlText * text_message = new TiXmlText( message.c_str() );
+	el_message->LinkEndChild( text_message );
+	
+	TiXmlElement * el_selection = new TiXmlElement( "selection" );
+	root->LinkEndChild( el_selection );
+	TiXmlElement * el_selection_x = new TiXmlElement( "x" );
+	el_selection->LinkEndChild( el_selection_x );
+	std::ostringstream oss_x;oss_x << point_x;
+	TiXmlText * text_selection_x = new TiXmlText(oss_x.str().c_str() );
+	el_selection_x->LinkEndChild( text_selection_x );
+	TiXmlElement * el_selection_y = new TiXmlElement( "y" );
+	el_selection->LinkEndChild( el_selection_y );
+	std::ostringstream oss_y;oss_y << point_y;
+	TiXmlText * text_selection_y = new TiXmlText( oss_y.str().c_str() );
+	el_selection_y->LinkEndChild( text_selection_y );
+	
+	
+	TiXmlElement * el_colors = new TiXmlElement( "colors" );
+	root->LinkEndChild( el_colors );
+	TiXmlElement * el_colors_contrast = new TiXmlElement( "contrast" );
+	el_colors->LinkEndChild( el_colors_contrast );
+	std::ostringstream oss_contrast;oss_contrast << contrast;
+	TiXmlText * tecontrastt_colors_contrast = new TiXmlText(oss_contrast.str().c_str() );
+	el_colors_contrast->LinkEndChild( tecontrastt_colors_contrast );
+	TiXmlElement * el_colors_brightness = new TiXmlElement( "brightness" );
+	el_colors->LinkEndChild( el_colors_brightness );
+	std::ostringstream oss_brightness;oss_brightness << brightness;
+	TiXmlText * tecontrastt_colors_brightness = new TiXmlText( oss_brightness.str().c_str() );
+	el_colors_brightness->LinkEndChild( tecontrastt_colors_brightness );
+	TiXmlElement * el_colors_gamma = new TiXmlElement( "gamma" );
+	el_colors->LinkEndChild( el_colors_gamma );
+	std::ostringstream oss_gamma;oss_gamma << gamma;
+	TiXmlText * tecontrastt_colors_gamma = new TiXmlText( oss_gamma.str().c_str() );
+	el_colors_gamma->LinkEndChild( tecontrastt_colors_gamma );
+	
+	TiXmlElement * el_zoom = new TiXmlElement( "zoom" );
+	root->LinkEndChild( el_zoom );
+	std::ostringstream oss_zoom;oss_zoom << zoom_factor;
+	TiXmlText * text_zoom = new TiXmlText( oss_zoom.str().c_str() );
+	el_zoom->LinkEndChild( text_zoom );
+	
+	TiXmlElement * el_image_number = new TiXmlElement( "image_number" );
+	root->LinkEndChild( el_image_number );
+	std::ostringstream oss_image_number;oss_image_number << num_file;
+	TiXmlText * text_image_number = new TiXmlText( oss_image_number.str().c_str() );
+	el_image_number->LinkEndChild( text_image_number );
+	
+	TiXmlElement * el_image_list = new TiXmlElement( "image_list" );
+	root->LinkEndChild( el_image_list );
+	for (unsigned int i=0;i<filenames.size();i++)
+	{
+		TiXmlElement * el_img = new TiXmlElement( "img" );
+		el_image_list->LinkEndChild( el_img );
+		TiXmlText * text_img = new TiXmlText(filenames[i].c_str());
+		el_img->LinkEndChild( text_img );
+	}
+	
+	doc.LinkEndChild( decl );
+	doc.LinkEndChild( root );
+
+	
+	doc.SaveFile(cfgfile.c_str());
 	return true;
 }
 
-
-bool ConfigZoomer::write(string cfgfile)
+void ConfigZoomer::init_example()
 {
-	ofstream conf_file(cfgfile.c_str());
-	
-	conf_file<<message<<endl;
-	conf_file<<point_x<<endl;
-	conf_file<<point_y<<endl;
-	conf_file<<zoom_factor<<endl;
-
-	conf_file<<contrast<<endl;
-	conf_file<<brightness<<endl;
-	conf_file<<gamma<<endl;
-
-	conf_file<<num_file<<endl;
-
-	for (unsigned int i=0;i<filenames.size();i++)
-		conf_file<<filenames[i]<<endl;
-
-	conf_file.close();
-	
-	return true;
+	message="This is an example file: please click upper-left corner of B";
+	point_x=150.0;
+	point_y=100.0;
+	zoom_factor=1.0;
+	contrast=100;
+	brightness=0;
+	gamma=100;
+	num_file=1;
+	filenames.push_back("ex/A.png");
+	filenames.push_back("ex/B.png");
+	filenames.push_back("ex/C.png");
 }

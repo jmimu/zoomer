@@ -13,7 +13,7 @@ int main( int argc, char **argv )
 
 	mw->show();
 	
-	mw->load_config("zoomer.cfg");
+	mw->load_config("zoomer.xml");
 	
 	
 	a.connect( &a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()) );

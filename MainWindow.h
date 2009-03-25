@@ -45,7 +45,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    bool load_config(std::string cfgfile);
+    bool load_config(QString cfgfile);
 private:
 		void resizeEvent( QResizeEvent* );
 		QScrollArea *sa;
@@ -76,8 +76,8 @@ public slots:
     void gammaMore();
     void gammaLess();
     void validation_();
-    void previous_();
-    void next_();
+    bool previous_();
+    bool next_();
 
 };
 

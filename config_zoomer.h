@@ -29,14 +29,21 @@
 #include <string>
 #include <vector>
 
+#include "tinyxml/tinyxml.h"
+
 using namespace std;
+
+/**
+ * Zoomer configuration, using XML
+ * */
 
 class ConfigZoomer
 {
 	public:
 		ConfigZoomer();
-		bool read(string cfgfile);
+		int read(string cfgfile);
 		bool write(string cfgfile);
+		void init_example();
 		
 		string message;
 		float point_x;

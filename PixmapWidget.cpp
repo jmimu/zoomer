@@ -28,6 +28,7 @@
 #include <QMouseEvent>
 #include <QScrollArea>
 #include <QScrollBar>
+#include <QMessageBox>
 #include <QImage>
 #include "math.h"
 #include <iostream>
@@ -44,10 +45,15 @@ PixmapWidget::PixmapWidget( const QString &_filename, QWidget *parent ) : QWidge
 	sa=(QScrollArea *)parent;
 	filename=_filename;
 	m_pm = new QPixmap( _filename );
-	load_img(filename);
 	zoomFactor = 1;
 	select_x=0.0;
 	select_y=0.0;
+	if (!load_img(filename))
+	{
+		QMessageBox::information(this, "Error!", "Starting file not found, it begins badly...");
+		zoomFactor=-1;//message to say that it's not working...
+	}
+
 	//setMinimumSize( m_pm->width()*zoomFactor, m_pm->height()*zoomFactor );
 	
 }
@@ -80,12 +86,19 @@ void PixmapWidget::modif_img()
 bool PixmapWidget::load_img(QString _filename)
 {
 	filename=_filename;
+	bool ret=!m_pm->load(filename);
+	
+	if (ret)
+	{
+		QMessageBox::information(this, "Error!", "File "+_filename+" not found");
+		return false;
+	}
+
 	delete originale;
-	bool ret=m_pm->load(filename);
 	m_pm->detach();
 	originale=new QImage(m_pm->toImage());
 	modif_img();
-	return ret;
+	return true;
 }
 
 void PixmapWidget::centerView()
@@ -171,9 +184,13 @@ void PixmapWidget::paintEvent( QPaintEvent *event )
 	p.drawEllipse(xoffset+(select_x-r2)*zoomFactor,yoffset+(select_y-r2)*zoomFactor,r2*2*zoomFactor,r2*2*zoomFactor);
 	p.setPen(QPen(Qt::red, 1));
 	p.drawEllipse(xoffset+(select_x-r3)*zoomFactor,yoffset+(select_y-r3)*zoomFactor,r3*2*zoomFactor,r3*2*zoomFactor);
+
 	p.setPen(Qt::black);
-	p.drawLine(xoffset+(select_x-2)*zoomFactor,yoffset+select_y*zoomFactor,xoffset+(select_x+2)*zoomFactor,yoffset+select_y*zoomFactor);
-	p.drawLine(xoffset+select_x*zoomFactor,yoffset+(select_y-2)*zoomFactor,xoffset+select_x*zoomFactor,yoffset+(select_y+2)*zoomFactor);
+	p.drawLine(xoffset+(select_x-r2)*zoomFactor,yoffset+select_y*zoomFactor,xoffset+(select_x)*zoomFactor,yoffset+select_y*zoomFactor);
+	p.drawLine(xoffset+select_x*zoomFactor,yoffset+(select_y-r2)*zoomFactor,xoffset+select_x*zoomFactor,yoffset+(select_y)*zoomFactor);
+	p.setPen(Qt::white);
+	p.drawLine(xoffset+(select_x)*zoomFactor,yoffset+select_y*zoomFactor,xoffset+(select_x+r2)*zoomFactor,yoffset+select_y*zoomFactor);
+	p.drawLine(xoffset+select_x*zoomFactor,yoffset+(select_y)*zoomFactor,xoffset+select_x*zoomFactor,yoffset+(select_y+r2)*zoomFactor);
 
 	//std::cout<<" maxx : "<<sa->horizontalScrollBar()->maximum()<<"\n";
 	//centerView();
@@ -187,6 +204,10 @@ void PixmapWidget::wheelEvent( QWheelEvent *event )
 	if (event->delta()>0) f=zoomFactor*1.2;
 	else if (event->delta()<0) f=zoomFactor/1.2;
 	else f=zoomFactor;
+	
+	if (f<0.1) f=0.1;
+	if (f>100.0) f=100.0;
+	
 	//std::cout<<f<<std::endl;
 	if( f < 32.0/m_pm->width() )
 		f = 32.0/m_pm->width();
