@@ -1,0 +1,8 @@
+ * faire un centrage parfait de la selection ?
+ * pb decalage du zoom (ca a l'air d'aller)
+ * garder que clic gauche pour faire une selection
+ * clic milieu : echelle = 1
+ * pouvoir choisir le nom du fichier de config en argument du programme
+ * liste des images pour se deplacer plus vite ?
+ * optimiser les corrections radiometriques : combiner les 3 corrections et ne pas recalculer les corrections a chaque image
+ * ordre des corrections : gamma avant contraste, lumi a la fin
