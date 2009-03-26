@@ -217,7 +217,7 @@ void PixmapWidget::wheelEvent( QWheelEvent *event )
 
 void PixmapWidget::mousePressEvent( QMouseEvent *event )
 {
-	std::cout<<((event->x()-xoffset)/zoomFactor)<<" "<<((event->y()-yoffset)/zoomFactor)<<"    "<<std::endl;
+	std::cout<<((event->x()-xoffset)/zoomFactor)<<","<<((event->y()-yoffset)/zoomFactor)<<std::endl;
 	select_x=(event->x()-xoffset)/zoomFactor;
 	select_y=(event->y()-yoffset)/zoomFactor;
 	repaint();

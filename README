@@ -1,33 +1,3 @@
-zoomer: view and click pictures
+Source code for a Qt 4 Resource Center article. Read it here:
 
-compiling (needs QT 4.4 or more):
-	
-	qmake
-	make
-	
-running:
-	
-	./zoomer
-
-zoomer reads the configuration file "zoomer.cfg", and writes the changes to it.
-The configuration file is like this:
-
-###########################
-Click on front wheel			#message
-620.999										#selection x
-369.833										#selection y
-6.00001										#zoom factor
-100												#contrast (%)
-0													#brightness
-100												#gamma (%)
-2													#number of the image (first = 1)
-img/image_4_00035_07.tif	#list of image names
-img/image_4_00035_08.tif	#
-img/image_4_00035_09.tif	#
-img/image_4_00035_10.tif	#
-###########################
-
-
-
-Thanks to http://qt4.digitalfanatics.org
-
+  http://qt4.digitalfanatics.org

@@ -83,7 +83,9 @@ int ConfigZoomer::read(string cfgfile)//return: 0:ok, -1:no file, 1:problem in t
 				message=el_message->GetText();
 				TiXmlElement* el_zoom = root->FirstChildElement("zoom");
 				if (!el_zoom) { std::ostringstream oss;oss << "Unable to find 'zoom' node !" << std::endl;throw std::string(oss.str());}
-				zoom_factor=atof(el_zoom->GetText());
+				std::istringstream iss_zoom(el_zoom->GetText());
+				iss_zoom>>zoom_factor;
+				
 				TiXmlElement* el_image_number = root->FirstChildElement("image_number");
 				if (!el_image_number) { std::ostringstream oss;oss << "Unable to find 'image_number' node !" << std::endl;throw std::string(oss.str());}
 				num_file=atoi(el_image_number->GetText());
@@ -100,18 +102,16 @@ int ConfigZoomer::read(string cfgfile)//return: 0:ok, -1:no file, 1:problem in t
 					TiXmlElement* el_selection_x = el_selection->FirstChildElement("x");
 					if ( !el_selection_x )
 						throw std::string( "Unable to find 'x' node !" );
-					cout<<"X : *"<<el_selection_x->GetText()<<"* *"<<atof(el_selection_x->GetText())<<"*\n";
-					string s=el_selection_x->GetText();
-					cout<<"X : *"<<s<<"* *"<<atof(s.c_str())<<"*\n";
-					std::istringstream iss(s);
-					iss>>point_x;
-					cout<<"X : *"<<s<<"* *"<<point_x<<"*\n";
-					point_x=atof(el_selection_x->GetText());
+					
+					//don't use atof because of local settings (want "," instead of ".", why ?)
+					std::istringstream iss_point_x(el_selection_x->GetText());
+					iss_point_x>>point_x;
 					
 					TiXmlElement* el_selection_y = el_selection->FirstChildElement("y");
 					if ( !el_selection_y )
 						throw std::string( "Unable to find 'y' node !" );
-					point_y=atof(el_selection_y->GetText());
+					std::istringstream iss_point_y(el_selection_y->GetText());
+					iss_point_y>>point_y;
 				}
 				
 				
