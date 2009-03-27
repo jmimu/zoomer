@@ -1,3 +1,23 @@
-Source code for a Qt 4 Resource Center article. Read it here:
+zoomer: view and click pictures
 
-  http://qt4.digitalfanatics.org
+zoomer is used to look at several successive pictures (from a movie
+for example), and find one particular point on a particular image.
+
+
+compiling (needs QT 4.4 or more):
+	
+	qmake
+	make
+	
+running:
+	
+	./zoomer
+
+zoomer reads the configuration file "zoomer.xml", and writes the changes to it.
+
+If the configuration file is not found, zoomer creates an example one,
+where you can see the structure of datas.
+
+
+Thanks to http://qt4.digitalfanatics.org
+

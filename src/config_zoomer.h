@@ -54,6 +54,7 @@ class ConfigZoomer
 		int gamma;
 		unsigned int num_file;//number of the picture (first = 1)
 		vector <string> filenames;
+		bool validated;
 };
 
 #endif // CONFIG_ZOOMER_H

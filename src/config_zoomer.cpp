@@ -26,7 +26,7 @@
 using namespace std;
 
 ConfigZoomer::ConfigZoomer()
-	:	message(""),point_x(0.0),point_y(0.0),zoom_factor(1.0),contrast(100),brightness(0),gamma(100),num_file(0)
+	:	message(""),point_x(0.0),point_y(0.0),zoom_factor(1.0),contrast(100),brightness(0),gamma(100),num_file(0),validated(false)
 {
 
 }
@@ -85,6 +85,11 @@ int ConfigZoomer::read(string cfgfile)//return: 0:ok, -1:no file, 1:problem in t
 				if (!el_zoom) { std::ostringstream oss;oss << "Unable to find 'zoom' node !" << std::endl;throw std::string(oss.str());}
 				std::istringstream iss_zoom(el_zoom->GetText());
 				iss_zoom>>zoom_factor;
+				
+				TiXmlElement* el_validated = root->FirstChildElement("validated");
+				if (!el_validated) { std::ostringstream oss;oss << "Unable to find 'validated' node !" << std::endl;throw std::string(oss.str());}
+				std::istringstream iss_validated(el_validated->GetText());
+				iss_validated>>validated;
 				
 				TiXmlElement* el_image_number = root->FirstChildElement("image_number");
 				if (!el_image_number) { std::ostringstream oss;oss << "Unable to find 'image_number' node !" << std::endl;throw std::string(oss.str());}
@@ -233,6 +238,12 @@ bool ConfigZoomer::write(string cfgfile)
 	std::ostringstream oss_zoom;oss_zoom << zoom_factor;
 	TiXmlText * text_zoom = new TiXmlText( oss_zoom.str().c_str() );
 	el_zoom->LinkEndChild( text_zoom );
+	
+	TiXmlElement * el_validated = new TiXmlElement( "validated" );
+	root->LinkEndChild( el_validated );
+	std::ostringstream oss_validated;oss_validated << validated;
+	TiXmlText * text_validated = new TiXmlText( oss_validated.str().c_str() );
+	el_validated->LinkEndChild( text_validated );
 	
 	TiXmlElement * el_image_number = new TiXmlElement( "image_number" );
 	root->LinkEndChild( el_image_number );

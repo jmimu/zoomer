@@ -134,6 +134,8 @@ MainWindow::~MainWindow()
 bool MainWindow::load_config(QString cfgfile)
 {
 	int result_read=cfg.read(cfgfile.toStdString());
+	cfg.validated=false;//validated only if click on validated !
+	
 	if (result_read==-1)
 	{
 		QMessageBox::information(this, "Error!", "Configuration file not found, an example has been created: "+cfgfile);
@@ -228,6 +230,7 @@ void MainWindow::validation_()
 	cfg.contrast=pw->contrast;
 	cfg.brightness=pw->brightness;
 	cfg.gamma=pw->gamma;
+	cfg.validated=true;
 	cfg.write("zoomer.xml");
 	qApp->quit();
 }
