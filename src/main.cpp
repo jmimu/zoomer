@@ -3,7 +3,7 @@
 #include "MainWindow.h"
 #include "config_zoomer.h"
 
-#define ZOOMER_VERSION 0.12
+#define ZOOMER_VERSION 0.13
 
 int main( int argc, char **argv )
 {

@@ -39,43 +39,43 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
   
 	reload_img = new QPushButton;
 	reload_img->setToolTip("Reinitialize colors");
-	reload_img->setIcon(QIcon("pic/reload_img.png"));
+	reload_img->setIcon(QIcon(":/pic/reload_img.png"));
 	mainToolBar->addWidget(reload_img);
 	QObject::connect(reload_img, SIGNAL(clicked()), this, SLOT(reloadImg()));
 
 	contrast_more = new QPushButton;
 	contrast_more->setToolTip("More contrast");
-	contrast_more->setIcon(QIcon("pic/contrast_more.png"));
+	contrast_more->setIcon(QIcon(":/pic/contrast_more.png"));
 	mainToolBar->addWidget(contrast_more);
 	QObject::connect(contrast_more, SIGNAL(clicked()), this, SLOT(contrastMore()));
 
 	contrast_less = new QPushButton;
 	contrast_less->setToolTip("Less contrast");
-	contrast_less->setIcon(QIcon("pic/contrast_less.png"));
+	contrast_less->setIcon(QIcon(":/pic/contrast_less.png"));
 	mainToolBar->addWidget(contrast_less);
 	QObject::connect(contrast_less, SIGNAL(clicked()), this, SLOT(contrastLess()));
 
 	brightness_more = new QPushButton;
 	brightness_more->setToolTip("Brighter");
-	brightness_more->setIcon(QIcon("pic/brightness_more.png"));
+	brightness_more->setIcon(QIcon(":/pic/brightness_more.png"));
 	mainToolBar->addWidget(brightness_more);
 	QObject::connect(brightness_more, SIGNAL(clicked()), this, SLOT(brightnessMore()));
 
 	brightness_less = new QPushButton;
 	brightness_less->setToolTip("Less bright");
-	brightness_less->setIcon(QIcon("pic/brightness_less.png"));
+	brightness_less->setIcon(QIcon(":/pic/brightness_less.png"));
 	mainToolBar->addWidget(brightness_less);
 	QObject::connect(brightness_less, SIGNAL(clicked()), this, SLOT(brightnessLess()));
 
 	gamma_more = new QPushButton;
 	gamma_more->setToolTip("More gamma");
-	gamma_more->setIcon(QIcon("pic/gamma_more.png"));
+	gamma_more->setIcon(QIcon(":/pic/gamma_more.png"));
 	mainToolBar->addWidget(gamma_more);
 	QObject::connect(gamma_more, SIGNAL(clicked()), this, SLOT(gammaMore()));
 
 	gamma_less = new QPushButton;
 	gamma_less->setToolTip("Less gamma");
-	gamma_less->setIcon(QIcon("pic/gamma_less.png"));
+	gamma_less->setIcon(QIcon(":/pic/gamma_less.png"));
 	mainToolBar->addWidget(gamma_less);
 	QObject::connect(gamma_less, SIGNAL(clicked()), this, SLOT(gammaLess()));
 
@@ -86,13 +86,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
 	
 	previous = new QPushButton;
 	previous->setToolTip("Previous picture");
-	previous->setIcon(QIcon("pic/previous.png"));
+	previous->setIcon(QIcon(":/pic/previous.png"));
 	mainToolBar->addWidget(previous);
 	QObject::connect(previous, SIGNAL(clicked()), this, SLOT(previous_()));
 	
 	next = new QPushButton;
 	next->setToolTip("Next picture");
-	next->setIcon(QIcon("pic/next.png"));
+	next->setIcon(QIcon(":/pic/next.png"));
 	mainToolBar->addWidget(next);
 	QObject::connect(next, SIGNAL(clicked()), this, SLOT(next_()));
 	
@@ -103,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
 	
 	validation = new QPushButton;
 	validation->setToolTip("Validation");
-	validation->setIcon(QIcon("pic/validation.png"));
+	validation->setIcon(QIcon(":/pic/validation.png"));
 	mainToolBar->addWidget(validation);
 	QObject::connect(validation, SIGNAL(clicked()), this, SLOT(validation_()));
 
@@ -116,7 +116,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
 
 	exit = new QPushButton;
 	exit->setToolTip("Exit without saving");
-	exit->setIcon(QIcon("pic/exit.png"));
+	exit->setIcon(QIcon(":/pic/exit.png"));
 	mainToolBar->addWidget(exit);
 	QObject::connect(exit, SIGNAL(clicked()), qApp, SLOT(quit()));
 	

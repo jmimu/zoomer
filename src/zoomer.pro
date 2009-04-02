@@ -7,8 +7,8 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-TARGET = zoomer
+TARGET = ../zoomer
 HEADERS += PixmapWidget.h MainWindow.h qimage_manip.h config_zoomer.h tinyxml/tinyxml.h tinyxml/tinystr.h
 SOURCES += main.cpp PixmapWidget.cpp MainWindow.cpp config_zoomer.cpp tinyxml/tinyxml.cpp tinyxml/tinystr.cpp tinyxml/tinyxmlerror.cpp tinyxml/tinyxmlparser.cpp
 
-
+RESOURCES     = zoomer.qrc

@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>pic/reload_img.png</file>
+        <file>pic/brightness_less.png</file>
+        <file>pic/brightness_more.png</file>
+        <file>pic/contrast_less.png</file>
+        <file>pic/contrast_more.png</file>
+        <file>pic/gamma_less.png</file>
+        <file>pic/gamma_more.png</file>
+        <file>pic/previous.png</file>
+        <file>pic/next.png</file>
+        <file>pic/validation.png</file>
+        <file>pic/exit.png</file>
+    </qresource>
+</RCC>
+
+
