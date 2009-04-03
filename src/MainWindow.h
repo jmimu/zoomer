@@ -76,6 +76,7 @@ public slots:
     void gammaMore();
     void gammaLess();
     void validation_();
+    void cancel_();
     bool previous_();
     bool next_();
 

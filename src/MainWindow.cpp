@@ -118,7 +118,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
 	exit->setToolTip("Exit without saving");
 	exit->setIcon(QIcon(":/pic/exit.png"));
 	mainToolBar->addWidget(exit);
-	QObject::connect(exit, SIGNAL(clicked()), qApp, SLOT(quit()));
+	QObject::connect(exit, SIGNAL(clicked()), this, SLOT(cancel_()));
 	
 	sa = new QScrollArea( this );
 	sa->setWidgetResizable( true );
@@ -192,36 +192,43 @@ void MainWindow::reloadImg()
 	pw->gamma=100;
 	pw->modif_img();
 }
+
 void MainWindow::contrastMore()
 {
 	pw->contrast+=10;
 	pw->modif_img();
 }
+
 void MainWindow::contrastLess()
 {
 	pw->contrast-=10;
 	pw->modif_img();
 }
+
 void MainWindow::brightnessMore()
 {
 	pw->brightness+=10;
 	pw->modif_img();
 }
+
 void MainWindow::brightnessLess()
 {
 	pw->brightness-=10;
 	pw->modif_img();
 }
+
 void MainWindow::gammaMore()
 {
 	pw->gamma+=10;
 	pw->modif_img();
 }
+
 void MainWindow::gammaLess()
 {
 	pw->gamma-=10;
 	pw->modif_img();
 }
+
 void MainWindow::validation_()
 {
 	cfg.point_x=pw->select_x;
@@ -234,6 +241,14 @@ void MainWindow::validation_()
 	cfg.write("zoomer.xml");
 	qApp->quit();
 }
+
+void MainWindow::cancel_()
+{
+	cfg.validated=false;
+	cfg.write("zoomer.xml");
+	qApp->quit();
+}
+
 bool MainWindow::previous_()
 {
 	if (cfg.num_file>1)

@@ -34,6 +34,7 @@ ConfigZoomer::ConfigZoomer()
 
 int ConfigZoomer::read(string cfgfile)//return: 0:ok, -1:no file, 1:problem in the file
 {
+	validated=false;
 	//first: check existence of the file
 	ifstream conf_file(cfgfile.c_str(), ios::in);
 	if(!conf_file)
