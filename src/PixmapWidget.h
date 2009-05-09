@@ -52,13 +52,16 @@ signals:
 protected:
 	void paintEvent( QPaintEvent* );
 	void wheelEvent( QWheelEvent* );
-	void mousePressEvent( QMouseEvent* );
+	void mousePressEvent( QMouseEvent* event);
+	//void mouseMoveEvent( QMouseEvent * event);
+
 
 private:
 	QScrollArea *sa;
 
 	float zoomFactor;
-	int xoffset, yoffset;
+	float xoffset;
+	float yoffset;
 	
 	float select_x,select_y;
 	QString filename;

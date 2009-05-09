@@ -36,6 +36,8 @@
 #include "PixmapWidget.h"
 #include "qimage_manip.h"
 
+using namespace std;
+
 PixmapWidget::PixmapWidget( const QString &_filename, QWidget *parent ) : QWidget( parent ),originale(NULL),modified(NULL)
 {
 	contrast=100;
@@ -107,8 +109,8 @@ void PixmapWidget::centerView()
 	//std::cout<<"hz :   curr "<<sa->horizontalScrollBar()->value()<<"   new "<<sa->horizontalScrollBar()->maximum()* select_x/m_pm->width()<<"   max "<<sa->horizontalScrollBar()->maximum()<<"   sel "<<select_x<<"   size "<<m_pm->width()<<"\n";
 	//std::cout<<"vert :   curr "<<sa->verticalScrollBar()->value()<<"   new "<<sa->verticalScrollBar()->maximum()* select_y/m_pm->height()<<"   max"<<sa->verticalScrollBar()->maximum()<<"   sel "<<select_y<<"   size "<<m_pm->height()<<"\n";
 	
-	sa->horizontalScrollBar()->setValue( sa->horizontalScrollBar()->maximum()* select_x/m_pm->width());
-	sa->verticalScrollBar()->setValue( sa->verticalScrollBar()->maximum()* select_y/m_pm->height());
+	//sa->horizontalScrollBar()->setValue( sa->horizontalScrollBar()->maximum()* select_x/m_pm->width());
+	//sa->verticalScrollBar()->setValue( sa->verticalScrollBar()->maximum()* select_y/m_pm->height());
 	
 	repaint();
 }
@@ -123,8 +125,8 @@ void PixmapWidget::setZoomFactor( float f )
 	zoomFactor = f;
 	emit( zoomFactorChanged( zoomFactor ) );
 
-	w = m_pm->width()*zoomFactor;
-	h = m_pm->height()*zoomFactor;
+	w = m_pm->width();//*zoomFactor;
+	h = m_pm->height();//*zoomFactor;
 	setMinimumSize( w, h );
 	
 	QWidget *p = dynamic_cast<QWidget*>( parent() );
@@ -134,15 +136,24 @@ void PixmapWidget::setZoomFactor( float f )
 	}
 	
 	centerView();
-	//std::cout<<"fin setZoomFactor  maxx : "<<sa->horizontalScrollBar()->maximum()<<"\n";;
+	//std::cout<<"fin setZoomFactor  maxx : "<<sa->horizontalScrollBar()->maximum()<<"\n";
 	//repaint();
 }
 
-void PixmapWidget::paintEvent( QPaintEvent *event )
+void PixmapWidget::paintEvent( QPaintEvent * )
 {
+	cout<<"Parent size : "<<sa->width()<<" "<<sa->height()<<endl;
+	cout<<"Pixmap size : "<<width()<<" "<<height()<<endl;
+	cout<<"m_pm size : "<<m_pm->width()<<" "<<m_pm->height()<<endl;
+	cout<<"m_pm zoomed size : "<<m_pm->width()*zoomFactor<<" "<<m_pm->height()*zoomFactor<<endl;
+	
 	bool drawBorder = false;
 	
-	if( width() > m_pm->width()*zoomFactor )
+	xoffset =sa->width()/2 - select_x*zoomFactor;
+	yoffset =sa->height()/2 - select_y*zoomFactor;
+	drawBorder = true;
+	
+	/*if( width() > m_pm->width()*zoomFactor )
 	{
 		xoffset = (width()-m_pm->width()*zoomFactor)/2;
 		drawBorder = true;
@@ -160,7 +171,7 @@ void PixmapWidget::paintEvent( QPaintEvent *event )
 	else
 	{
 		yoffset = 0;
-	}
+	}*/
 
 	QPainter p( this );
 	p.save();
@@ -220,5 +231,22 @@ void PixmapWidget::mousePressEvent( QMouseEvent *event )
 	std::cout<<((event->x()-xoffset)/zoomFactor)<<","<<((event->y()-yoffset)/zoomFactor)<<std::endl;
 	select_x=(event->x()-xoffset)/zoomFactor;
 	select_y=(event->y()-yoffset)/zoomFactor;
-	repaint();
+	
+	if (select_x<0) select_x=0;
+	if (select_y<0) select_y=0;
+	if (select_x>m_pm->width()) select_x=m_pm->width();
+	if (select_y>m_pm->height()) select_y=m_pm->height();
+	centerView();
 }
+
+/*void PixmapWidget::mouseMoveEvent( QMouseEvent * event)
+{
+	cout<<"x";
+	select_x=(event->x()-xoffset)/zoomFactor;
+	select_y=(event->y()-yoffset)/zoomFactor;
+	if (select_x<0) select_x=0;
+	if (select_y<0) select_y=0;
+	if (select_x>m_pm->width()) select_x=m_pm->width();
+	if (select_y>m_pm->height()) select_y=m_pm->height();
+	centerView();
+}*/
