@@ -127,7 +127,7 @@ void PixmapWidget::setZoomFactor( float f )
 
 	w = m_pm->width();//*zoomFactor;
 	h = m_pm->height();//*zoomFactor;
-	setMinimumSize( w, h );
+	//setMinimumSize( w, h );
 	
 	QWidget *p = dynamic_cast<QWidget*>( parent() );
 	if( p )

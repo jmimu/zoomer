@@ -123,7 +123,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
 	sa = new QScrollArea( this );
 	sa->setWidgetResizable( true );
 
-	resize(640-1,480);
+	resize(800-1,480);
 }
 
 MainWindow::~MainWindow()
@@ -166,7 +166,7 @@ bool MainWindow::load_config(QString cfgfile)
 	pw->select_y=cfg.point_y;
 
 	//have to do it to update scrollbars
-	resize(640,480);
+	resize(800,480);
 	pw->setZoomFactor(cfg.zoom_factor);
 	
 	previous->setDisabled(cfg.num_file==1);
