@@ -146,6 +146,12 @@ bool MainWindow::load_config(QString cfgfile)
 		return false;
 	}
 
+	if (cfg.filenames.size()<cfg.num_file)
+	{
+		QMessageBox::information(this, "Error!", "Image number out of range!");
+		cfg.num_file=cfg.filenames.size();
+	}
+	
 	statusBar->showMessage(cfg.message.c_str());
 	pw = new PixmapWidget( QString(cfg.filenames[cfg.num_file-1].c_str()), sa );
 	

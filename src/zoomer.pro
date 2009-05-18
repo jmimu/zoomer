@@ -5,6 +5,7 @@
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += .
+CONFIG += qt debug console
 
 # Input
 TARGET = ../zoomer
