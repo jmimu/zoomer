@@ -107,6 +107,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),pw(NULL), cfg()
 	mainToolBar->addWidget(validation);
 	QObject::connect(validation, SIGNAL(clicked()), this, SLOT(validation_()));
 
+        extra = new QPushButton;
+        extra->setToolTip("Validation");
+        extra->setIcon(QIcon(":/pic/extra.png"));
+        mainToolBar->addWidget(extra);
+        QObject::connect(extra, SIGNAL(clicked()), this, SLOT(extra_()));
 
 	QFrame *line3=new QFrame(mainToolBar);
 	line3->setFrameShape(QFrame::VLine);
@@ -253,6 +258,11 @@ void MainWindow::cancel_()
 	cfg.validated=false;
 	cfg.write("zoomer.xml");
 	qApp->quit();
+}
+
+void MainWindow::extra_()
+{
+    std::cout<<pw->get_sel_x()<<" "<<pw->get_sel_y()<<std::endl;
 }
 
 bool MainWindow::previous_()

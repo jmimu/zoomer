@@ -63,6 +63,7 @@ private:
 
     QPushButton *previous;
     QPushButton *next;
+    QPushButton *extra;
     QPushButton *exit;
     
     ConfigZoomer cfg;
@@ -77,6 +78,7 @@ public slots:
     void gammaLess();
     void validation_();
     void cancel_();
+    void extra_();
     bool previous_();
     bool next_();
 

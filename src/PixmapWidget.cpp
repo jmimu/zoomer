@@ -142,10 +142,10 @@ void PixmapWidget::setZoomFactor( float f )
 
 void PixmapWidget::paintEvent( QPaintEvent * )
 {
-	cout<<"Parent size : "<<sa->width()<<" "<<sa->height()<<endl;
-	cout<<"Pixmap size : "<<width()<<" "<<height()<<endl;
-	cout<<"m_pm size : "<<m_pm->width()<<" "<<m_pm->height()<<endl;
-	cout<<"m_pm zoomed size : "<<m_pm->width()*zoomFactor<<" "<<m_pm->height()*zoomFactor<<endl;
+	//cout<<"Parent size : "<<sa->width()<<" "<<sa->height()<<endl;
+	//cout<<"Pixmap size : "<<width()<<" "<<height()<<endl;
+	//cout<<"m_pm size : "<<m_pm->width()<<" "<<m_pm->height()<<endl;
+	//cout<<"m_pm zoomed size : "<<m_pm->width()*zoomFactor<<" "<<m_pm->height()*zoomFactor<<endl;
 	
 	bool drawBorder = false;
 	
@@ -228,7 +228,7 @@ void PixmapWidget::wheelEvent( QWheelEvent *event )
 
 void PixmapWidget::mousePressEvent( QMouseEvent *event )
 {
-	std::cout<<((event->x()-xoffset)/zoomFactor)<<","<<((event->y()-yoffset)/zoomFactor)<<std::endl;
+        //std::cout<<((event->x()-xoffset)/zoomFactor)<<","<<((event->y()-yoffset)/zoomFactor)<<std::endl;
 	select_x=(event->x()-xoffset)/zoomFactor;
 	select_y=(event->y()-yoffset)/zoomFactor;
 	

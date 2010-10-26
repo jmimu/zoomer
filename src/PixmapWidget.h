@@ -42,6 +42,8 @@ public:
 	QPixmap *m_pm;
 	bool load_img(QString _filename);
 	void centerView();
+        float get_sel_x(){return select_x;}
+        float get_sel_y(){return select_y;}
 
 public slots:
 	void setZoomFactor( float );
